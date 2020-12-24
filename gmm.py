@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 from kmeans import KMeans
 from scipy.stats import multivariate_normal
@@ -15,10 +16,17 @@ class GMM():
         self.mixing_weights = None
         self.max_iterations = 200
 
+    def loadMeans(self, path):
+        self.means = np.load(path)
+
     def fit(self, features):
-        kmeans = KMeans(self.n_clusters)
-        kmeans.fit(features)
-        self.means = kmeans.means
+        if self.means is None:
+            kmeans = KMeans(self.n_clusters)
+            kmeans.fit(features)
+            print('finished initial clustering')
+            self.means = kmeans.means
+            np.save('means.npy', self.means)
+
         self.covariances = self._init_covariance(features.shape[-1])
         self.mixing_weights = np.random.rand(self.n_clusters)
         self.mixing_weights /= np.sum(self.mixing_weights)
@@ -28,7 +36,7 @@ class GMM():
         n_iter = 0
         rounds = 0
         while log_likelihood - prev_log_likelihood > 1e-4 and n_iter < self.max_iterations:
-            print('round: ', rounds)
+            print('gmm iteration: ', rounds)
             rounds += 1
 
             prev_log_likelihood = log_likelihood

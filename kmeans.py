@@ -16,10 +16,9 @@ class KMeans:
         self.means = list(map(lambda x: features[x]['feature'], rand.choice(len(features), self.n_clusters, False)))
 
         updated = True
-        # rounds = 0
+        iteration = 0
         while updated:
-            # print('round: ', rounds)
-            # rounds += 1
+            iteration += 1
 
             updated, features = self.update_assignments(features)
             if not updated:
